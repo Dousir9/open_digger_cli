@@ -7,11 +7,11 @@ pub use url_builder::UrlBuilder;
 use utils::camel_to_snake_case;
 
 /// The root URL of OpenDigger static data
-const root: &str = "https://oss.x-lab.info/open-digger/github/";
+const ROOT: &str = "https://oss.x-lab.info/open_digger/github/";
 
 enum_with_to_string!{
     pub enum Metric {
-        ActiveDatesAndTime,
+        ActiveDatesAndTimes,
         Stars,
         TechnicalFork,
         Participants,
@@ -41,11 +41,19 @@ enum_with_to_string!{
 
 #[cfg(test)]
 mod tests {
-    use crate::Metric;
+    use crate::{Metric, UrlBuilder};
 
     #[test]
     fn test_enum() {
-        let metric = Metric::ActiveDatesAndTime;
+        let metric = Metric::ActiveDatesAndTimes;
         assert_eq!(metric.to_string().as_str(), "active_dates_and_time");
+    }
+
+    #[test]
+    fn test_url_builder() {
+        let repo_name = "test/test";
+        let builder = UrlBuilder::new(repo_name).with_metric(Metric::BusFactor);
+        let url = builder.build().unwrap();
+        assert_eq!(url.as_str(), "https://oss.x-lab.info/open-digger/github/test/test/bus_factor.json");
     }
 }

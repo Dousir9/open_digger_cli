@@ -21,6 +21,15 @@ pub(crate) fn camel_to_snake_case(camel_case: &str) -> String {
 }
 
 #[macro_export]
+macro_rules! execute_if {
+    ($cond:expr, $expr:expr) => {
+        if $cond {
+            $expr
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! enum_with_to_string {
     (pub enum $name:ident {
         $($variant:ident),*,
@@ -30,10 +39,19 @@ macro_rules! enum_with_to_string {
         }
 
         impl $name {
-            fn to_string(&self) -> String {
+            pub fn to_string(&self) -> String {
                 match self {
                     $($name::$variant => camel_to_snake_case(stringify!($variant))),*
                 }
+            }
+        }
+
+        impl std::str::FromStr for $name {
+            type Err = CliError;
+
+            fn from_str(s: &str) -> Result<Self> {
+                $(execute_if!(s == camel_to_snake_case(stringify!($variant)), return Ok($name::$variant));)*
+                return Err(CliError::StringError(format!("invalid variant: {s}")));
             }
         }
     };
