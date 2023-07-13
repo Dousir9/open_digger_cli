@@ -1,4 +1,4 @@
-use crate::{Metric, Result, root, CliError};
+use crate::{Metric, Result, ROOT, CliError};
 
 
 pub struct UrlBuilder<'a> {
@@ -24,8 +24,7 @@ impl<'a> UrlBuilder<'a> {
     pub fn build(self) -> Result<String> {
         match self.metric {
             Some(m) => {
-
-                Ok(root.to_owned() + "")
+                Ok(ROOT.to_owned() + self.repo_name + "/" + &m.to_string() + ".json")
             }
             None => Err(
                 CliError::StringError(

@@ -1,7 +1,7 @@
 use clap::{arg, command, ArgMatches, Command};
-use std::{env, process};
+use std::{env, process, str::FromStr};
 
-use open_digger_cli::{CliError, Result};
+use open_digger_cli::{Result, UrlBuilder, Metric};
 
 fn main() -> Result<()> {
     let matches = command!()
@@ -46,10 +46,15 @@ fn request(matches: ArgMatches) -> Result<()> {
     match matches.subcommand() {
         Some(("repo", sub_matches)) => {
             let repo = sub_matches.get_one::<String>("repo").unwrap();
-            let metric = sub_matches.get_one::<String>("metric").unwrap();
+            let metric = Metric::from_str(sub_matches.get_one::<String>("metric").unwrap())?;
             let month = sub_matches.get_one::<String>("month").unwrap();
             let download = sub_matches.get_one::<String>("download");
-            dbg!(&repo, metric, &month, &download);
+            dbg!(repo, metric.to_string(), month, download);
+
+            let url = UrlBuilder::new(&repo).with_metric(metric).build()?;
+            let body = reqwest::blocking::get(&url)?.text()?;
+            dbg!(format!("request url: {:}", url));
+            println!("{:}", body);
         }
         _ => unreachable!(""),
     }
