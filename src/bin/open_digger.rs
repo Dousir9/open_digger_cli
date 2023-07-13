@@ -18,7 +18,8 @@ fn main() -> Result<()> {
                 .arg(
                     arg!(--metric <METRIC>)
                         .help("The metric you want to query.")
-                        .required(true),
+                        .required(false)
+                        .default_value("all"),
                 )
                 .arg(
                     arg!(--month <MONTH>)
