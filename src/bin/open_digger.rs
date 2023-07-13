@@ -24,8 +24,7 @@ fn main() -> Result<()> {
                 .arg(
                     arg!(--month <MONTH>)
                         .help("The month you want to query.")
-                        .required(false)
-                        .default_value("")
+                        .required(false),
                 )
                 .arg(
                     arg!(--download <DOWNLOAD>)
@@ -47,14 +46,24 @@ fn request(matches: ArgMatches) -> Result<()> {
         Some(("repo", sub_matches)) => {
             let repo = sub_matches.get_one::<String>("repo").unwrap();
             let metric = Metric::from_str(sub_matches.get_one::<String>("metric").unwrap())?;
-            let month = sub_matches.get_one::<String>("month").unwrap();
+            let month = sub_matches.get_one::<String>("month");
             let download = sub_matches.get_one::<String>("download");
             dbg!(repo, metric.to_string(), month, download);
 
             let url = UrlBuilder::new(&repo).with_metric(metric).build()?;
             let body = reqwest::blocking::get(&url)?.text()?;
-            dbg!(format!("request url: {:}", url));
-            println!("{:}", body);
+            println!("repo.name: {:}", repo);
+            println!("request url: {:}", url);
+            match month {
+                Some(m) => {
+                    let value: serde_json::Value = serde_json::from_str(&body)?;
+                    println!("month: {:}", m);
+                    println!("data: {:}", value.get(m).unwrap());
+                }
+                None => {
+                    println!("data: {:}", body);
+                }
+            }
         }
         _ => unreachable!(""),
     }
