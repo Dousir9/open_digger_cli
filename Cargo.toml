@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.3.11", features = ["cargo"]}
 thiserror = "1.0"
+reqwest = "0.11"

@@ -14,7 +14,7 @@ fn main() -> Result<()> {
         .subcommand(
             Command::new("repo")
                 .about("Query a github repo.")
-                .arg(arg!(--repo <REPO>).help("The github repo, for example: X-lab2017/open-digger.").required(true))
+                .arg(arg!(--repo <REPO>).help("The github repo name, for example: X-lab2017/open-digger.").required(true))
                 .arg(
                     arg!(--metric <METRIC>)
                         .help("The metric you want to query.")
@@ -29,9 +29,8 @@ fn main() -> Result<()> {
                 )
                 .arg(
                     arg!(--download <DOWNLOAD>)
-                        .help("If you want to download: y/n")
+                        .help("The output file path if you want to download")
                         .required(false)
-                        .default_value("n")
                 ),
         )
         .get_matches();
@@ -49,7 +48,7 @@ fn request(matches: ArgMatches) -> Result<()> {
             let repo = sub_matches.get_one::<String>("repo").unwrap();
             let metric = sub_matches.get_one::<String>("metric").unwrap();
             let month = sub_matches.get_one::<String>("month").unwrap();
-            let download = sub_matches.get_one::<String>("download").unwrap();
+            let download = sub_matches.get_one::<String>("download");
             dbg!(&repo, metric, &month, &download);
         }
         _ => unreachable!(""),
