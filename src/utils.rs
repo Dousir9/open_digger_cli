@@ -45,6 +45,12 @@ macro_rules! enum_with_to_string {
                     $($name::$variant => camel_to_snake_case(stringify!($variant))),*
                 }
             }
+
+            pub fn valid_metrics() -> Vec<Self> {
+                vec![
+                    $($name::$variant),*
+                ]
+            }
         }
 
         impl ValueEnum for $name {
