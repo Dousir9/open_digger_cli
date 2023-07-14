@@ -5,6 +5,7 @@ mod utils;
 pub use errors::{CliError, Result};
 pub use url_builder::UrlBuilder;
 use utils::camel_to_snake_case;
+use clap::{ValueEnum, builder::PossibleValue};
 
 /// The root URL of OpenDigger static data
 const ROOT: &str = "https://oss.x-lab.info/open_digger/github/";

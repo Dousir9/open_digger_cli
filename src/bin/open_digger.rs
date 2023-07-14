@@ -1,5 +1,5 @@
-use clap::{arg, command, ArgMatches, Command};
-use std::{env, process, str::FromStr};
+use clap::{arg, command, ArgMatches, Command, value_parser};
+use std::{env, process};
 
 use open_digger_cli::{Result, UrlBuilder, Metric};
 
@@ -19,7 +19,7 @@ fn main() -> Result<()> {
                     arg!(--metric <METRIC>)
                         .help("The metric you want to query.")
                         .required(false)
-                        .default_value("all"),
+                        .value_parser(value_parser!(Metric)),
                 )
                 .arg(
                     arg!(--month <MONTH>)
@@ -45,27 +45,39 @@ fn request(matches: ArgMatches) -> Result<()> {
     match matches.subcommand() {
         Some(("repo", sub_matches)) => {
             let repo = sub_matches.get_one::<String>("repo").unwrap();
-            let metric = Metric::from_str(sub_matches.get_one::<String>("metric").unwrap())?;
+            let metric = sub_matches.get_one::<Metric>("metric");
             let month = sub_matches.get_one::<String>("month");
             let download = sub_matches.get_one::<String>("download");
-            dbg!(repo, metric.to_string(), month, download);
+            dbg!(repo, month, download);
 
-            let url = UrlBuilder::new(&repo).with_metric(metric).build()?;
-            let body = reqwest::blocking::get(&url)?.text()?;
-            println!("repo.name: {:}", repo);
-            println!("request url: {:}", url);
-            match month {
-                Some(m) => {
-                    let value: serde_json::Value = serde_json::from_str(&body)?;
-                    println!("month: {:}", m);
-                    println!("data: {:}", value.get(m).unwrap());
-                }
-                None => {
-                    println!("data: {:}", body);
-                }
+            let output = match metric {
+                Some(m) => request_with_metric(m, repo, month)?,
+                None => todo!()
+            };
+
+            match download {
+                Some(path) => todo!(),
+                None => println!("{:}", output),
             }
         }
         _ => unreachable!(""),
     }
     Ok(())
+}
+
+#[inline]
+fn request_with_metric(metric: &Metric, repo: &String, month: Option<&String>) -> Result<String> {
+    let url = UrlBuilder::new(&repo).with_metric(metric.clone()).build()?;
+    let body = reqwest::blocking::get(&url)?.text()?;
+    println!("repo.name: {:}", repo);
+    println!("request url: {:}", url);
+    match month {
+        Some(m) => {
+            let value: serde_json::Value = serde_json::from_str(&body)?;
+            Ok(format!("month: {:}\n data: {:}", m, value.get(m).unwrap()))
+        }
+        None => {
+            Ok(format!("data: {:}", body))
+        }
+    }
 }
