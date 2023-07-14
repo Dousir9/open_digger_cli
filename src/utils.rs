@@ -34,6 +34,7 @@ macro_rules! enum_with_to_string {
     (pub enum $name:ident {
         $($variant:ident),*,
     }) => {
+        #[derive(Clone)]
         pub enum $name {
             $($variant),*
         }
@@ -46,11 +47,25 @@ macro_rules! enum_with_to_string {
             }
         }
 
+        impl ValueEnum for $name {
+            fn value_variants<'a>() -> &'a [Self] {
+                &[$($name::$variant),*]
+            }
+
+            fn to_possible_value<'a>(&self) -> Option<PossibleValue> {
+                Some(match self {
+                    $($name::$variant => {
+                        PossibleValue::new(stringify!($variant))
+                    }),*
+                })
+            }
+        }
+
         impl std::str::FromStr for $name {
             type Err = CliError;
 
             fn from_str(s: &str) -> Result<Self> {
-                $(execute_if!(s == camel_to_snake_case(stringify!($variant)), return Ok($name::$variant));)*
+                $(execute_if!(s.to_lowercase() == stringify!($variant).to_lowercase(), return Ok($name::$variant));)*
                 return Err(CliError::StringError(format!("invalid variant: {s}")));
             }
         }
