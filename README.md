@@ -12,9 +12,9 @@ OpenDigger 实现了各类统计型和网络型的指标，详细内容参考这
 
 **任务重点**
 
-该子模块最终形态应该是一个可运行的 CLI 工具，安装后，用户可以通过一系列的命令达成查询功能。使用介绍如下：
+该子模块最终形态应该是一个可运行的 CLI 工具，安装后，用户可以通过一系列的命令达成查询功能。
 
-# Usage
+# 3.Usage
 ```shell
 Usage: open_digger repo [OPTIONS] --repo <REPO>
 
@@ -27,7 +27,7 @@ Options:
   -V, --version              Print version
 ```
 
-# Examples: query a github repo
+# 4.Examples: query a github repo
 
 ```shell
 -> % ./open_digger repo --repo apple/swift --metric ChangeRequests --month 2023-06
