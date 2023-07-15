@@ -1,6 +1,6 @@
 # open_digger_cli
 
-# Usage: query a github repo.
+# Usage
 ```shell
 Usage: open_digger repo [OPTIONS] --repo <REPO>
 
@@ -13,7 +13,7 @@ Options:
   -V, --version              Print version
 ```
 
-# Examples
+# Examples: query a github repo
 
 ```shell
 -> % ./open_digger repo --repo apple/swift --metric ChangeRequests --month 2023-06
