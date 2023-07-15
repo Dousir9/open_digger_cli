@@ -145,13 +145,12 @@ fn download(
     for (metric, data) in data.iter() {
         let mut file_tag = 0;
         let mut file_name = format!(
-            "{}-{}_{}-{}.json",
-            repo,
+            "{}_{}-{}.json",
             metric.to_string(),
             file_tag,
             month
         );
-        let mut file_path = dir_path.join(file_name);
+        let mut file_path = dir_path.join(repo).join(file_name);
         if !file_path.is_absolute() {
             return Err(CliError::String(String::from("invalid download path")));
         }
@@ -163,13 +162,12 @@ fn download(
             }
             file_tag += 1;
             file_name = format!(
-                "{}-{}_{}-{}.json",
-                repo,
+                "{}_{}-{}.json",
                 metric.to_string(),
                 file_tag,
                 month
             );
-            file_path = dir_path.join(file_name);
+            file_path = dir_path.join(repo).join(file_name);
         }
         // safe to unwrap().
         let parent_dir = std::path::Path::new(&file_path).parent().unwrap();

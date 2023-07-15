@@ -86,33 +86,33 @@ Options:
 └─────────┴────────────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 -> % ./open_digger repo --repo apple/swift --metric Stars --month 2023-06 --download /Users/xujinkai/Desktop/open_digger_data
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-stars_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/stars_0-2023-06.json
 
 -> % ./open_digger repo --repo apple/swift --month 2023-06 --download /Users/xujinkai/Desktop/open_digger_data
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-issues_closed_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-bus_factor_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-issue_response_time_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-issue_age_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-change_requests_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-new_contributors_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-code_change_lines_sum_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-code_change_lines_remove_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-stars_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-issues_new_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-change_requests_reviews_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-inactive_contributors_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-issue_comments_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-change_requests_accepted_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-code_change_lines_add_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-participants_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-technical_fork_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-change_request_age_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-new_contributors_detail_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-issue_resolution_duration_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-change_request_response_time_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-bus_factor_detail_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-active_dates_and_times_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-change_request_resolution_duration_0-2023-06.json
-Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift-activity_details_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/issues_new_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/code_change_lines_sum_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/issues_closed_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/bus_factor_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/issue_comments_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/issue_response_time_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/new_contributors_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/stars_1-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/change_request_age_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/code_change_lines_add_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/participants_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/change_request_response_time_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/code_change_lines_remove_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/change_request_resolution_duration_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/technical_fork_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/change_requests_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/change_requests_accepted_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/issue_age_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/change_requests_reviews_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/inactive_contributors_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/new_contributors_detail_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/issue_resolution_duration_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/bus_factor_detail_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/active_dates_and_times_0-2023-06.json
+Downloaded file: /Users/xujinkai/Desktop/open_digger_data/apple/swift/activity_details_0-2023-06.json
 ```
 
