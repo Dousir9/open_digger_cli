@@ -34,7 +34,7 @@ fn main() -> Result<()> {
                 )
                 .arg(
                     arg!(--download <DOWNLOAD>)
-                        .help("The file save path if you want to download, for example: /User/test/download")
+                        .help("The file save dir path if you want to download.")
                         .required(false)
                 ),
         )
