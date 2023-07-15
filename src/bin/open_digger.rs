@@ -1,15 +1,19 @@
-use clap::{arg, command, ArgMatches, Command, value_parser};
+use clap::{arg, command, value_parser, ArgMatches, Command};
 use reqwest::Client;
 use tokio::sync::mpsc;
-use std::{env, process};
-
-use open_digger_cli::{Result, UrlBuilder, Metric};
+#[macro_use]
+extern crate prettytable;
+use open_digger_cli::CliError;
+use open_digger_cli::{Metric, Result, UrlBuilder};
+use prettytable::format::consts::FORMAT_BOX_CHARS;
+use prettytable::Table;
+use std::io::Write;
 
 fn main() -> Result<()> {
     let matches = command!()
-        .version(env!("CARGO_PKG_VERSION"))
-        .about(env!("CARGO_PKG_DESCRIPTION"))
-        .author(env!("CARGO_PKG_AUTHORS"))
+        .version(std::env!("CARGO_PKG_VERSION"))
+        .about(std::env!("CARGO_PKG_DESCRIPTION"))
+        .author(std::env!("CARGO_PKG_AUTHORS"))
         .propagate_version(true)
         .subcommand_required(true)
         .arg_required_else_help(true)
@@ -30,104 +34,163 @@ fn main() -> Result<()> {
                 )
                 .arg(
                     arg!(--download <DOWNLOAD>)
-                        .help("The output file path if you want to download")
+                        .help("The file save path if you want to download, for example: /User/test/download")
                         .required(false)
                 ),
         )
         .get_matches();
 
-    if let Err(err) = request(matches) {
+    if let Err(err) = handle(matches) {
         eprintln!("{:?}", err);
-        process::exit(-1);
+        std::process::exit(-1);
     }
     Ok(())
 }
 
-fn request(matches: ArgMatches) -> Result<()> {
+fn handle(matches: ArgMatches) -> Result<()> {
     match matches.subcommand() {
         Some(("repo", sub_matches)) => {
             let repo = sub_matches.get_one::<String>("repo").unwrap();
             let metric = sub_matches.get_one::<Metric>("metric");
             let month = sub_matches.get_one::<String>("month");
-            let download = sub_matches.get_one::<String>("download");
-            dbg!(repo, month, download);
+            let download_path = sub_matches.get_one::<String>("download");
 
-            let output = match metric {
-                Some(m) => request_with_metric(m, repo, month)?,
-                None => request_month_report(repo, month)?,
-            };
-
-            match download {
-                Some(path) => todo!(),
-                None => println!("{:}", output),
+            let data = request(&repo, metric, month)?;
+            match download_path {
+                Some(download_path) => download(&repo, data, download_path, month)?,
+                None => print_table(data, month),
             }
         }
-        _ => unreachable!(""),
+        _ => unreachable!(),
     }
     Ok(())
 }
 
-#[inline]
-fn request_with_metric(metric: &Metric, repo: &String, month: Option<&String>) -> Result<String> {
-    let url = UrlBuilder::new(&repo).with_metric(metric.clone()).build()?;
-    let body = reqwest::blocking::get(&url)?.text()?;
-    println!("repo.name: {:}", repo);
-    println!("request url: {:}", url);
-    match month {
-        Some(m) => {
-            let value: serde_json::Value = serde_json::from_str(&body)?;
-            Ok(format!("month: {:}\n data: {:}", m, value.get(m).unwrap()))
-        }
-        None => {
-            Ok(format!("data: {:}", body))
-        }
-    }
-}
+fn request(
+    repo: &String,
+    metric: Option<&Metric>,
+    month: Option<&String>,
+) -> Result<Vec<(Metric, String)>> {
+    let metrics = match metric {
+        Some(metric) => vec![metric.clone()],
+        None => Metric::valid_metrics(),
+    };
+    let month = match month {
+        Some(month) => Some(month.clone()),
+        None => None,
+    };
 
-#[inline]
-fn request_month_report(repo: &String, month: Option<&String>) -> Result<String> {
+    let url_builder = UrlBuilder::new(&repo);
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_time()
         .enable_io()
         .build()?;
-    let month = month.cloned().expect("Should give the month when you query month report");
-    let metrics = Metric::valid_metrics();
-    let urls = metrics.iter()
-        .map(|u| UrlBuilder::new(repo).with_metric(u.clone()).build())
-        .collect::<Result<Vec<_>>>()?;
+
     rt.block_on(async move {
-        let mut body = String::new();
-        let (sender, mut receiver) = mpsc::channel::<Option<String>>(urls.len());
-        for (url, metric) in urls.into_iter().zip(metrics.into_iter()) {
-            let sender_clone = sender.clone();
-            let month = month.clone();
+        let (sender, mut receiver) = mpsc::channel::<Result<(Metric, String)>>(metrics.len());
+        for metric in metrics.into_iter() {
+            let url = url_builder.build_url_with_metric(&metric);
+            let cloned_sender = sender.clone();
+            let cloned_month = month.clone();
             tokio::spawn(async move {
-                fetch_url(&metric, url, &month, sender_clone).await.unwrap();
+                // safe to unwrap().
+                cloned_sender
+                    .send(request_and_filter_data(url, &metric, cloned_month).await)
+                    .await
+                    .unwrap();
             });
         }
         drop(sender);
-        while let Some(recieve_data) = receiver.recv().await {
-            if let Some(s) = recieve_data {
-                body.push_str(&s);
-            }
+
+        let mut result = vec![];
+        while let Some(data) = receiver.recv().await {
+            result.push(data?);
         }
-        Ok(body)
+        Ok(result)
     })
 }
 
-async fn fetch_url(metric: &Metric, url: String, month: &String, sender: mpsc::Sender<Option<String>>) -> Result<()>{
-    let response = Client::new()
-        .get(&url)
-        .send()
-        .await
-        .unwrap()
-        .text()
-        .await
-        .unwrap();
+async fn request_and_filter_data(
+    url: String,
+    metric: &Metric,
+    month: Option<String>,
+) -> Result<(Metric, String)> {
+    let data = Client::new().get(&url).send().await?.text().await?;
+    let json_data: serde_json::Value = serde_json::from_str(&data)?;
+    match month {
+        Some(month) => {
+            if let Some(month_data) = json_data.get(month) {
+                Ok((metric.clone(), month_data.to_string()))
+            } else {
+                Ok((metric.clone(), String::from("NULL")))
+            }
+        }
+        None => Ok((metric.clone(), json_data.to_string())),
+    }
+}
 
-    let value: serde_json::Value = serde_json::from_str(&response)?;
-    let month_value = value.get(month)
-        .map(|v| format!("{:}: {:}\n", metric.to_string(), v));
-    sender.send(month_value).await.unwrap();
+fn download(
+    repo: &String,
+    data: Vec<(Metric, String)>,
+    download_path: &String,
+    month: Option<&String>,
+) -> Result<()> {
+    let month = match month {
+        Some(month) => month.clone(),
+        None => String::from("alltime"),
+    };
+
+    let dir_path = std::path::PathBuf::from(download_path);
+    std::fs::create_dir_all(&dir_path)?;
+    for (metric, data) in data.iter() {
+        let mut file_tag = 0;
+        let mut file_name = format!(
+            "{}-{}_{}-{}.json",
+            repo,
+            metric.to_string(),
+            file_tag,
+            month
+        );
+        let mut file_path = dir_path.join(file_name);
+        if !file_path.is_absolute() {
+            return Err(CliError::String(String::from("invalid download path")));
+        }
+        // de-duplicate
+        loop {
+            match std::fs::metadata(&file_path) {
+                Ok(_) => (), // file exists.
+                Err(_) => break,
+            }
+            file_tag += 1;
+            file_name = format!(
+                "{}-{}_{}-{}.json",
+                repo,
+                metric.to_string(),
+                file_tag,
+                month
+            );
+            file_path = dir_path.join(file_name);
+        }
+        // safe to unwrap().
+        let parent_dir = std::path::Path::new(&file_path).parent().unwrap();
+        std::fs::create_dir_all(parent_dir)?;
+        let mut file = std::fs::File::create(&file_path)?;
+        file.write_all(data.as_bytes())?;
+        println!("Downloaded file: {}", file_path.to_string_lossy());
+    }
     Ok(())
+}
+
+fn print_table(data: Vec<(Metric, String)>, month: Option<&String>) {
+    let month = match month {
+        Some(month) => month.clone(),
+        None => String::from("ALL MONTH"),
+    };
+    let mut table = Table::new();
+    table.set_format(*FORMAT_BOX_CHARS);
+    table.add_row(row!["Month", "Metric", "Data"]);
+    for (metric, data) in data.iter() {
+        table.add_row(row![month, metric.to_string(), data]);
+    }
+    table.printstd();
 }

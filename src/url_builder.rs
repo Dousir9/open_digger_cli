@@ -1,36 +1,20 @@
-use crate::{Metric, Result, ROOT, CliError};
-
+use crate::metric::Metric;
 
 pub struct UrlBuilder<'a> {
     repo_name: &'a str,
-    metric: Option<Metric>,
 }
 
 impl<'a> UrlBuilder<'a> {
+    /// The root URL of OpenDigger static data
+    const ROOT: &str = "https://oss.x-lab.info/open_digger/github/";
+
+    #[inline]
     pub fn new(repo_name: &'a str) -> Self {
-        Self {
-            repo_name,
-            metric: None,
-        }
+        Self { repo_name }
     }
 
-    pub fn with_metric(self, metric: Metric) -> Self {
-        Self {
-            repo_name: self.repo_name,
-            metric: Some(metric),
-        }
-    }
-
-    pub fn build(self) -> Result<String> {
-        match self.metric {
-            Some(m) => {
-                Ok(ROOT.to_owned() + self.repo_name + "/" + &m.to_string() + ".json")
-            }
-            None => Err(
-                CliError::StringError(
-                    format!("Should set metric before building the request url.")
-                )
-            )
-        }
+    #[inline]
+    pub fn build_url_with_metric(&self, metric: &Metric) -> String {
+        Self::ROOT.to_owned() + self.repo_name + "/" + &metric.to_string() + ".json"
     }
 }
