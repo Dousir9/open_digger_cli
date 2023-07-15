@@ -1,12 +1,12 @@
 # open_digger_cli
 
-# 1.背景介绍
+# 1. 背景介绍
 
 OpenDigger 实现了各类统计型和网络型的指标，详细内容参考这里。这些指标目前以 HTTPS URL 的形式提供 JSON 数据文件的查询结果，用户想查询某一个仓库在某一个指标的对应数据，可以通过修改 URL 的方式得到。
 
 在本任务中，我们希望实现一种新型的指标结果查询方式，即通过命令行（command line），实现可交互的指标结果查询。
 
-# 2.功能介绍
+# 2. 功能介绍
 
 本任务是基于 OpenDigger 已实现的各类指标，开发一个命令行工具，使得用户可以在终端查询 GitHub 上每一个仓库或每一个开发者在各项指标上的数据结果。
 
@@ -14,7 +14,7 @@ OpenDigger 实现了各类统计型和网络型的指标，详细内容参考这
 
 该子模块最终形态应该是一个可运行的 CLI 工具，安装后，用户可以通过一系列的命令达成查询功能。
 
-# 3.Usage
+# 3. Usage
 ```shell
 Usage: open_digger repo [OPTIONS] --repo <REPO>
 
@@ -27,7 +27,7 @@ Options:
   -V, --version              Print version
 ```
 
-# 4.Examples: query a github repo
+# 4. Examples: query a github repo
 
 ```shell
 -> % ./open_digger repo --repo apple/swift --metric ChangeRequests --month 2023-06
